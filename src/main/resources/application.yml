@@ -1,0 +1,4 @@
+server:
+  port: 8080
+
+apiUrl: "http://119.194.145.5"

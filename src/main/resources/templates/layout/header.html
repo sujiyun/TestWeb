@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <!--header-->
+    <div th:fragment="header(name)">
+        <div>
+            안녕하세요. <b>[[${name}]]</b>님
+            <input type="button" value="LOGOUT" onclick="location.href = '/user/logout';" />
+        </div>
+        <h2>게시판</h2>
+        <hr />
+    </div>
+    <!--/header-->
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>HOME</title>
+</head>
+<body>
+
+<!--body-->
+<!--
+<div>[[${header}]]</div>
+<span th:text="${name}"></span> 입니다.
+-->
+
+<input type="text" id="id" placeholder="ID" value="sjyun@unionnec.co.kr" />
+<input type="password" id="pw" placeholder="PASSWORD" value="1111" />
+<input type="button" value="LOGIN" id="login" />
+<input type="button" value="REGISTER" id="register" />
+
+<!--/body-->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+    $("#login").click(function() {
+        var jsonData = JSON.stringify({
+            login_id: $("#id").val(),
+            password: $("#pw").val()
+        });
+
+		 $.ajax({
+            url: "http://119.194.145.5/user/login",
+            type: "POST",
+            data: jsonData,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            dataType: "json",
+            success: function (data) {
+                if(data.errcode == "100") {
+                    location.href = '/user/login?userId=' + data.user_id + '&userLoginId=' + data.user_loginId + '&userName=' + data.user_name;
+                } else {
+                    alert(data.errmsg);
+                }
+
+            },
+            error: function (request,status,error) {
+                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            }
+         });
+    });
+
+    $("#register").click(function() {
+        location.href = '/user/register';
+    });
+</script>
+</body>
+</html>

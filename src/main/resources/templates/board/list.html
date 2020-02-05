@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>BOARD</title>
+</head>
+<body>
+<div th:replace="layout/header::header(${userName})"></div>
+<table width="800px;">
+    <colgroup>
+        <col width="10%;" />
+        <col width="15%" />
+        <col width="*" />
+        <col width="15%" />
+        <col width="20%" />
+    </colgroup>
+    <tr>
+        <th>NO</th>
+        <th>카테고리</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+    </tr>
+    <tr th:each="board, i : ${boards}" align="center">
+        <td th:text="${i.size - i.index}"></td>
+        <td th:text="${board.category} == 'USERNOTICE' ? 개인공지 : 전체공지"></td>
+        <td align="left"><a href="/board?id=" th:attrappend="href=${board.id}" th:text="${board.title}"></a></td>
+        <td th:text="${board.reg_user_name}"></td>
+        <td th:text="${board.reg_date.substring(0,4) + '-' + board.reg_date.substring(4,6) + '-' + board.reg_date.substring(6,8)
+         + ' ' + board.reg_date.substring(8,10) + ':' + board.reg_date.substring(10,12)}"></td>
+    </tr>
+</table>
+<div style="width: 800px;">
+    <div style="float: right;">
+        <input type="button" value="Add" onclick="location.href = '/board';" />
+    </div>
+</div>
+</body>
+</html>

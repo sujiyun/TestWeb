@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>BOARD</title>
+</head>
+<body>
+<div th:replace="layout/header::header(${userName})"></div>
+<form name="frmMain">
+    <input th:if="${board == null}" type="hidden" id="reg_user" th:value="${userId}" />
+    <input th:if="${board != null}" type="hidden" id="id" th:value="${board?.id}" />
+    <table style="width: 500px;">
+        <colgroup>
+            <col width="20%;" />
+            <col width="*" />
+        </colgroup>
+        <tr style="height:40px;">
+            <th>카테고리</th>
+            <td>
+                <!--<input type="text" th:value="${board.category}" style="width:98%; height:30px;" />-->
+                <select style="width:99%; height:36px;" id="category">
+                    <option value="">-선택-</option>
+                    <option value="NOTICE" th:selected = "${board?.category} == 'NOTICE'">전체공지</option>
+                    <option value="USERNOTICE" th:selected = "${board?.category} == 'USERNOTICE'">개인공지</option>
+                </select>
+            </td>
+        </tr>
+        <tr style="height:40px;">
+            <th>제목</th>
+            <td>
+                <input id="title" type="text" th:value="${board?.title}" style="width:98%; height:30px;" />
+            </td>
+        </tr>
+        <tr style="height:40px;">
+            <th>내용</th>
+            <td>
+                <textarea id="contents" th:text="${board?.contents}" maxlength="4000" style="width:98%; height:100px; resize: vertical;"></textarea>
+            </td>
+        </tr>
+        <tr th:if="${board != null}" style="height:40px;">
+            <th>작성자</th>
+            <td th:text="${board?.reg_user_name}"></td>
+        </tr>
+        <tr th:if="${board != null}" style="height:40px;">
+            <th>작성일</th>
+            <td th:text="${board?.reg_date.substring(0,4) + '-' + board?.reg_date.substring(4,6) + '-' + board?.reg_date.substring(6,8)
+             + ' ' + board?.reg_date.substring(8,10) + ':' + board?.reg_date.substring(10,12)}"></td>
+        </tr>
+    </table>
+</form>
+<div style="width: 500px;">
+    <div style="float: left;">
+        <input type="button" value="LIST" onclick="location.href = '/board/list';" />
+    </div>
+    <div style="float: right;">
+        <input id="add" th:if="${board == null}" type="button" value="SUBMIT" />
+        <input id="edit" th:unless="${board == null}" type="button" value="EDIT" />
+
+        <input id="del" th:if="${board != null}" type="button" value="DELETE" />
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+
+    $("#add").click(function() {
+        if(!validation()) return false;
+
+        var jsonData = JSON.stringify({
+            category: $("#category option:selected").val(),
+            title: $("#title").val(),
+            contents: $("#contents").val(),
+            reg_user: $("#reg_user").val()
+        });
+
+		 $.ajax({
+            url: "[[${@environment.getProperty('apiUrl')}]]" + "/board/add",
+            type: "POST",
+            data: jsonData,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            dataType: "json",
+            success: function (data) {
+                if(data.errcode == "100") {
+                    location.href = '/board?id=' + data.board_id;
+                } else {
+                    alert(data.errmsg);
+                }
+
+            },
+            error: function (request,status,error) {
+                alert('error');
+                console.log(error);
+            }
+         });
+    });
+
+    $("#edit").click(function() {
+        if(!validation()) return false;
+
+        var jsonData = JSON.stringify({
+            id: $("#id").val(),
+            category: $("#category option:selected").val(),
+            title: $("#title").val(),
+            contents: $("#contents").val()
+        });
+
+		 $.ajax({
+            url: "[[${@environment.getProperty('apiUrl')}]]" + "/board/edit",
+            type: "POST",
+            data: jsonData,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            dataType: "json",
+            success: function (data) {
+                if(data.errcode == "100") {
+                    alert("저장되었습니다.");
+                    location.href = '/board?id=' + $("#id").val();
+                } else {
+                    alert(data.errmsg);
+                }
+
+            },
+            error: function (request,status,error) {
+                alert('error');
+                console.log(error);
+            }
+         });
+    });
+
+    $("#del").click(function() {
+        if(confirm("삭제하시겠습니까?\r\n삭제된 내용은 복구할 수 없습니다."))  {
+             $.ajax({
+                url: "[[${@environment.getProperty('apiUrl')}]]" + "/board/del?id=" + $("#id").val(),
+                type: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                dataType: "json",
+                success: function (data) {
+                    if(data.errcode == "100") {
+                        alert("삭제되었습니다.");
+                        location.href = '/board/list';
+                    } else {
+                        alert(data.errmsg);
+                    }
+
+                },
+                error: function (request,status,error) {
+                    alert('error');
+                    console.log(error);
+                }
+             });
+         }
+    });
+
+    function validation() {
+        if($("#category option:selected").val() == "") {
+            alert("카테고리를 선택하세요.");
+            return false;
+        } else if($("#title").val() == "") {
+            alert("제목을 입력하세요.");
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

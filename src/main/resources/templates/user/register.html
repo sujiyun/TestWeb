@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>MEMBER REGISTER</title>
+</head>
+<body>
+
+<form name="frmMain">
+    <input type="text" id="id" placeholder="ID" value="sjyun@unionnec.co.kr"/>
+    <input type="text" id="pw" placeholder="PASSWORD" value="1111" />
+    <input type="text" id="name" placeholder="NAME" value="윤수지" />
+
+    <input type="button" value="MEMBER REGISTER" id="register" />
+</form>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script>
+    $("#register").click(function() {
+        var jsonData = JSON.stringify({
+            login_id: $("#id").val(),
+            password: $("#pw").val(),
+            name: $("#name").val()
+        });
+
+		 $.ajax({
+            url: "http://localhost/user/register",
+            type: "POST",
+            data: jsonData,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            dataType: "json",
+            success: function (data) {
+                if(data.errcode == "100") {
+                    alert('저장 성공!');
+                    location.href = '/';
+                } else {
+                    alert(data.errmsg);
+                }
+
+            },
+            error: function (request,status,error) {
+                alert('저장 실패!');
+            }
+         });
+    });
+</script>
+</body>
+</html>
